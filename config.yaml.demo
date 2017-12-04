@@ -7,7 +7,7 @@ resources:
     - name: data
       module: Directory
       children:
-        - name: readings
+        - name: history
           module: persistence.Database.History
           config: 
             database: postgresql+pygresql://xthemage@localhost/xthemage
