@@ -1,0 +1,16 @@
+port: 8080
+resources:
+  module: Directory
+  children:
+    - name:
+      module: HelloWorld
+    - name: data
+      module: Directory
+      children:
+        - name: readings
+          module: persistence.Database.ReadingsTable
+          config: 
+            database: postgresql+pygresql://xthemage@localhost/homebase
+            readings: READINGS
+            sensors: SENSORS
+
