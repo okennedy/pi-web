@@ -8,9 +8,9 @@ resources:
       module: Directory
       children:
         - name: readings
-          module: persistence.Database.ReadingsTable
+          module: persistence.Database.History
           config: 
-            database: postgresql+pygresql://xthemage@localhost/homebase
-            readings: READINGS
-            sensors: SENSORS
+            database: postgresql+pygresql://xthemage@localhost/xthemage
+            readings: readings
+            sensors: sensors
 

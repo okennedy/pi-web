@@ -32,7 +32,6 @@ def start(config):
   port = config.get('port', 8080)
   resources = config['resources']
   root = load_tree(resources)
-  print("??? -> {}".format(root.getChild("data", None)))
   site = server.Site(root)
   endpoint = endpoints.TCP4ServerEndpoint(reactor, port)
   endpoint.listen(site)

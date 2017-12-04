@@ -19,8 +19,10 @@ $> pip3.6 install PyYAML      # YAML Parsing
 ```
 $> psql -d ...
 
-psql> CREATE TABLE SENSORS(name varchar(50), id int);
-psql> CREATE TABLE READINGS(sensor int, time timestamp, data json);
+psql> CREATE TABLE sensors(name varchar(50), id SERIAL, PRIMARY KEY(id));
+psql> CREATE TABLE readings(sensor integer NOT NULL, time timestamp NOT NULL DEFAULT LOCALTIMESTAMP, data json, FOREIGN KEY (sensor) REFERENCES sensors(id));
+psql> CREATE INDEX ON readings USING BTREE (time);
+psql> CREATE INDEX ON readings USING BTREE (sensor, time);
 ```
 
 ### Go Time
