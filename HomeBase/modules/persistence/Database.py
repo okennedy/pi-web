@@ -1,24 +1,23 @@
 import json
-from twisted.web import resource
 from sqlalchemy import create_engine, text
 from sqlalchemy import Table, Column, MetaData, ForeignKey
 from sqlalchemy import Integer, String
 from sqlalchemy.types import DateTime, JSON
 from sqlalchemy.sql import select, desc, func
-from HomeBase import error
+from HomeBase.modules import Module
 
 EngineCache = {}
 
 def get_connection(url):
   if not url in EngineCache:
-    engine = create_engine(url, echo = True)
+    engine = create_engine(url)#, echo = True)
     EngineCache[url] = {
       "connection" : engine.connect(),
       "engine" : engine
     }
   return EngineCache[url]
 
-class History(resource.Resource):
+class History(Module):
   isLeaf = True
   def __init__(self, **kwargs):
     self.connection = get_connection(kwargs["database"])["connection"]
@@ -52,7 +51,7 @@ class History(resource.Resource):
     else:
       return row[0]
 
-  def render_GET(self, request):
+  def answer_GET(self, request):
     query = (
       select([
         self.sensors.c.name.label("sensor"), 
@@ -64,50 +63,42 @@ class History(resource.Resource):
     )
 
     # Add Interval
-    period = request.args.get(b"period", [b"week"])[0]
-    if period == b"week":
+    period = request.get("period", "week")
+    if period == "week":
       query = query.where(
         self.readings.c.time >= func.now() - text("INTERVAL '1 week'")
       )
     else:
       return error(request, "Invalid period parameter ({})".format(period))
 
-    sensor = request.args.get(b"sensor", [None])[0]
-    if sensor != None:
+    if "sensor" in request:
       query = query.where(
-        self.sensors.c.name == (sensor.decode())
+        self.sensors.c.name == request["sensor"]
       )
 
     result = self.connection.execute(query)
-    sep = b"\n  "
-    request.write(b"[")
-    for r in result:
-      request.write(sep)
-      request.write(json.dumps( { 
+    ret = [ { 
         "sensor" : r[0], 
         "time" : r[1].timestamp(), 
         "data" : r[2]
-      } ).encode())
-      sep = b",\n  "
+      } for r in result]
     result.close()
-    return b"\n]"
+    return ret 
   
-  def render_PUT(self, request):
-    sensor = request.args.get(b"sensor", [None])[0]
-    data = request.args.get(b"data", [None])[0]
+  def answer_PUT(self, request):
+    sensor = request.get("sensor", None)
+    data = request.get("data", None)
     if sensor == None:
-      return error(request, "Missing sensor name")
+      return { "error" : "Missing sensor name" }
     if data == None:
-      return error(request, "Missing data value")
-    sensor = self.sensor_id(sensor.decode())
+      return { "error" : "Missing data value" }
+    sensor = self.sensor_id(sensor)
     result = self.connection.execute(
       self.readings.insert().values(
         sensor = sensor,
-        data = data.decode()
+        data = data
       )
     )
     result.close()
-    return json.dumps({"status" : "success"}).encode()
-
-    return "{}".format().encode()
+    return {"status" : "success"}
 

@@ -2,14 +2,13 @@ import re
 import importlib
 from twisted.web import server
 from twisted.internet import reactor, endpoints
-from HomeBase.modules import HelloWorld
 
 def load_module(module_path, config):
   module_path = re.split("\\.", module_path)
   module_name = module_path.pop()
   module_path = ".".join(["HomeBase","modules"]+module_path)
   Module = getattr(importlib.import_module(module_path), module_name)
-  print("   {} <- {}".format(Module, config))
+  print("   {}".format(Module, config))
   return Module(**config)
 
 def load_tree(resource, prefix = ""):

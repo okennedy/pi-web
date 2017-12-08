@@ -1,16 +1,21 @@
 port: 8080
 resources:
-  module: Directory
+  module: organization.Directory
   children:
-    - name:
-      module: HelloWorld
     - name: data
-      module: Directory
+      module: organization.Directory
       children:
         - name: history
-          module: persistence.Database.History
+          module: persistence.database.History
           config: 
             database: postgresql+pygresql://xthemage@localhost/xthemage
             readings: readings
             sensors: sensors
+    - name: weather
+      module: organization.Directory
+      children:
+        - name: forecast
+          module: web.Mirror
+          config: 
+            target: http://api.wunderground.com/api/%%%%WU_KEY%%%%/forecast10day/q/NY/Amherst.json
 

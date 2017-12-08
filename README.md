@@ -12,6 +12,8 @@ $> pip3.6 install twisted     # Twisted Python -- Server Framework
 $> pip3.6 install PyGreSQL    # PostgreSQL integration
 $> pip3.6 install sqlalchemy  # SQL ORM
 $> pip3.6 install PyYAML      # YAML Parsing
+$> pip3.6 install requests    # HTTP client
+$> pip3.6 install caldav      # CalDav client
 ```
 
 ##### Standard Deployment
