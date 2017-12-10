@@ -8,6 +8,9 @@ def error(request, msg, **kvargs):
   return json.dumps(kvargs).encode()
 
 class Module(resource.Resource):
+  def __init__(self, **kwargs):
+    super(Module, self).__init__()
+
   def invoke(self, method, request):
     request.setHeader("Content-Type", "application/json")
     op = getattr(self, "answer_"+method, None)

@@ -11,19 +11,22 @@ def load_module(module_path, config):
   print("   {}".format(Module, config))
   return Module(**config)
 
-def load_tree(resource, prefix = ""):
+def load_tree(resource, prefix = "", root = None):
   module   = resource["module"]
   config   = resource.get("config", {})
+  config["root"] = root
   if len(prefix) == 0:
     print("/:")
   else:
     print(prefix+":")
   instance = load_module(module, config)
+  if root == None:
+    root = instance
   for child in resource.get("children", []):
     name = child["name"]
     if name == None:
       name = ""
-    instance.putChild(name.encode(), load_tree(child, prefix+"/"+name))
+    instance.putChild(name.encode(), load_tree(child, prefix+"/"+name, root))
   return instance
 
 def start(config):
