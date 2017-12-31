@@ -15,6 +15,7 @@ $> pip3.6 install PyYAML      # YAML Parsing
 $> pip3.6 install requests    # HTTP client
 $> pip3.6 install caldav      # CalDav client
 $> pip3.6 install matplotlib  # Graphing
+$> apt install python3-tk     # Support for matplotlib
 ```
 
 ##### Standard Deployment
@@ -26,6 +27,7 @@ psql> CREATE TABLE sensors(name varchar(50), id SERIAL, PRIMARY KEY(id));
 psql> CREATE TABLE readings(sensor integer NOT NULL, time timestamp NOT NULL DEFAULT LOCALTIMESTAMP, data json, FOREIGN KEY (sensor) REFERENCES sensors(id));
 psql> CREATE INDEX ON readings USING BTREE (time);
 psql> CREATE INDEX ON readings USING BTREE (sensor, time);
+psql> CREATE TABLE chores(name varchar(50), description text, last_performed timestamp, PRIMARY KEY(name));
 ```
 
 ### Go Time
