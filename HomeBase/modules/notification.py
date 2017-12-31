@@ -1,6 +1,8 @@
 from HomeBase.Query import query, lookup
 from HomeBase.modules import Module
 from HomeBase.Time import format_timedelta, days_until_start
+from datetime import date, datetime
+from time import time as get_now
 
 def Notification(**kvargs):
   return { 
@@ -17,6 +19,7 @@ class Notifications(Module):
     self.root = kvargs["root"];
 
   def answer_GET(self, request):
+    now = get_now()
     return (
       [
         Notification(
@@ -36,6 +39,28 @@ class Notifications(Module):
           priority = 2
         )
         for event in [lookup(self.root, ["data", "status", "sump_pump"])]
-        if event["depth"]["resistance"] < 500
+        if event["depth"]["resistance"] < 1500
+      ] + [
+        Notification(
+          body = "{} until {}".format(
+            event["description"], 
+            event["expires"]
+          ),
+          priority = 1 if event["significance"] == "Y" else 0,
+          icon = "weather/storm-1",
+          status = "warning" if event["significance"] == "Y" else "info"
+        )
+        for event in lookup(self.root, ["weather", "alerts", "alerts"])
+      ] + [
+        Notification(
+          body = "Walk out the trash",
+          priority = 0 if (now - trash["last_performed"] > 345600) else -100,
+          icon = "ecology/recycling-1",
+          status = "warning" if (now - trash["last_performed"] > 345600) else "faded",
+          action = "http://serenity/data/chores/curb_trash?complete=yes" if (now - trash["last_performed"] > 345600) else None
+        )
+        for trash in [lookup(self.root, ["chores", "curb_trash"])]
+        if datetime.today().weekday() == 3 # Show only on Thursday only
+
       ]
     )

@@ -77,6 +77,7 @@ class CalDav(Module):
       (calendar.get_properties([dav.DisplayName()])["{DAV:}displayname"], calendar)
       for calendar in self.principal.calendars()
     ])
+    #print(self.all_calendars)
     self.calendars = [ 
       self.all_calendars[name] 
       for name in kwargs["calendars"] 

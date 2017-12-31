@@ -26,6 +26,11 @@ def get_connection(url):
           Column('sensor', None, ForeignKey('sensors.id')),
           Column('time', DateTime()),
           Column('data', JSON)
+        ),
+        "chores" : Table('chores', metadata,
+          Column('name', String(50), primary_key=True),
+          Column('description', String()),
+          Column('last_performed', DateTime())
         )
       }
     }

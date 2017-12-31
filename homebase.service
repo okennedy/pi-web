@@ -1,0 +1,14 @@
+
+[Unit]
+Description=HomeBase Server
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /home/xthemage/Documents/pi-web/run.py
+WorkingDirectory=/home/xthemage/Documents/pi-web
+User=xthemage
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

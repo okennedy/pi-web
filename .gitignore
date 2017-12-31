@@ -102,3 +102,4 @@ ENV/
 
 # Local stuff
 config.yaml
+*~

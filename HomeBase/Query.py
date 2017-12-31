@@ -11,8 +11,8 @@ def normalize_child(child):
 def get_child(root, path_element):
   target = None
   if isinstance(root, Module):
-    if path_element.encode() in root.children:
-      target = root.children[path_element.encode()]
+    # print("Module: {}".format(path_element))
+    target = root.getChild(path_element.encode(), None)
   elif isinstance(root, list):
     position = int(path_element)
     if len(root) > position:
@@ -23,7 +23,7 @@ def get_child(root, path_element):
   else:
     raise Exception("Can't query {}".format(root))
   if target == None:
-    raise Exception("Invalid path: {} in ".format(path_element, root))
+    raise Exception("Invalid path: {} in {}".format(path_element, root.children.keys()))
 
   return normalize_child(target)
 

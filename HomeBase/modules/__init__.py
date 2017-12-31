@@ -11,6 +11,12 @@ class Module(resource.Resource):
   def __init__(self, **kwargs):
     super(Module, self).__init__()
 
+  def getChild(self, name, request):
+    if name == b"" or name == b"/":
+      return self
+    else:
+      return self.children.get(name, None)
+
   def invoke(self, method, request):
     request.setHeader("Content-Type", "application/json")
     op = getattr(self, "answer_"+method, None)

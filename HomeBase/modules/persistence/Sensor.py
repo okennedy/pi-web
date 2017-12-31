@@ -23,7 +23,7 @@ def get_sensor_id(connection, sensors, name):
     )
     key = result.inserted_primary_key
     result.close()
-    return key
+    return key[0]
   else:
     return row[0]
 
@@ -122,6 +122,7 @@ class OneStatus(Module):
     return data
 
   def answer_PUT(self, request):
+    print("Writing to sensor '{}': {}".format(self.sensor, request))
     result = self.connection.execute(
       self.readings.insert().values(
         sensor = self.sensor,
@@ -152,7 +153,7 @@ class AllStatus(Module):
     return ret
 
   def getChild(self, name, request):
-    if name == b"":
+    if name == b"" or name == b"/":
       return self
     if name in self.children:
       return self.children[name]
@@ -161,7 +162,7 @@ class AllStatus(Module):
 
   def answer_GET(self, request):
     result = self.connection.execute(select([self.sensors.c.name, self.sensors.c.id]))
-    return dict([
+    ret = dict([
       ( 
         sensor[0],
         ( self.children[sensor[0].encode()].answer_GET(request) 
@@ -171,4 +172,5 @@ class AllStatus(Module):
       )
       for sensor in result
     ])
+    return ret
 
