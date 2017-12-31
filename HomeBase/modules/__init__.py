@@ -15,13 +15,21 @@ class Module(resource.Resource):
     request.setHeader("Content-Type", "application/json")
     op = getattr(self, "answer_"+method, None)
     if(callable(op)):
-      payload = request.args.get(b"query", [request.content.read()])[0].decode()
-      if payload == "":
-        payload = "{}"
-      try:
-        payload = json.loads(payload)
-      except Exception as e:
-        return error(request, "Malformed JSON: "+str(e), input = payload)
+      payload = request.content.read().decode()
+      if(payload == ""):
+        payload = {}
+      else:
+        try:
+          payload = json.loads(payload)
+        except Exception as e:
+          return error(request, "Malformed JSON: {}".format(e), input = payload)
+      for k in request.args.keys():
+        v = request.args[k][0].decode()
+        # try:
+        #   v = json.loads(v)
+        # except Exception as e:
+        #   return error(request, "Malformed GET JSON: {}={}: {}".format(k, v, e), input = payload)
+        payload[k.decode()] = v
       ret = op(payload)
       if("error" in ret):
         request.setResponseCode(400)

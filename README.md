@@ -14,6 +14,7 @@ $> pip3.6 install sqlalchemy  # SQL ORM
 $> pip3.6 install PyYAML      # YAML Parsing
 $> pip3.6 install requests    # HTTP client
 $> pip3.6 install caldav      # CalDav client
+$> pip3.6 install matplotlib  # Graphing
 ```
 
 ##### Standard Deployment
