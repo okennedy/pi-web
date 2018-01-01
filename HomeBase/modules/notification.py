@@ -1,7 +1,7 @@
 from HomeBase.Query import query, lookup
 from HomeBase.modules import Module
 from HomeBase.Time import format_timedelta, days_until_start
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from time import time as get_now
 
 def Notification(**kvargs):
@@ -20,6 +20,7 @@ class Notifications(Module):
 
   def answer_GET(self, request):
     now = get_now()
+    status = lookup(self.root, ["data", "status"])
     return (
       [
         Notification(
@@ -38,7 +39,7 @@ class Notifications(Module):
           icon = "ecology/water-tap",
           priority = 2
         )
-        for event in [lookup(self.root, ["data", "status", "sump_pump"])]
+        for event in [lookup(status, ["sump_pump"])]
         if event["depth"]["resistance"] < 1500
       ] + [
         Notification(
@@ -62,5 +63,14 @@ class Notifications(Module):
         for trash in [lookup(self.root, ["chores", "curb_trash"])]
         if datetime.today().weekday() == 3 # Show only on Thursday only
 
+      ] + [
+        Notification(
+          body = "No updates from {} in {}".format(node, timedelta(seconds = now - lookup(status, [node, "last_update"]))),
+          priority = 2,
+          icon = "technology/transfer",
+          status = "danger"
+        )
+        for node in [ i.decode() for i in status.children.keys() ]
+        if now - lookup(status, [node, "last_update"]) > 3600
       ]
     )

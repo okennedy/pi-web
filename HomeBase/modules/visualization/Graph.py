@@ -14,18 +14,22 @@ class Graph(Module):
 
 
   def extract_line(self, data, x, y):
-    return { 
-      "x" : [ lookup(record, x) for record in data ], 
-      "y" : [ lookup(record, y) for record in data ] 
-    }
+    return [
+      { 
+        "x" : lookup(record, x), 
+        "y" : lookup(record, y) 
+      } 
+      for record in data 
+    ]
 
   def get_data(self):
     print(self.root)
     return [
       { 
-        "name"  : line["name"], 
+        "key"  : line["name"], 
         "color" : line["color"],
-        "data"  : self.extract_line(query(self.root, line["data"]), line["x_points"], line["y_points"])
+        "strokeWidth" : 3,
+        "values"  : self.extract_line(query(self.root, line["data"]), line["x_points"], line["y_points"])
       }
       for line in self.lines
     ]
